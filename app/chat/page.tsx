@@ -4,8 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { MessageSquare } from 'lucide-react'
-
+import { MessageSquare } from 'lucide-react' 
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<string[]>([])
@@ -23,13 +22,13 @@ export default function ChatPage() {
     }
 
     ws.onmessage = (event) => {
-      setMessages((prev) => [...prev, event.data])
+      setMessages((prev) => [...prev, event.data]) // Display messages broadcasted by the server
     }
 
     ws.onclose = () => {
       console.log('WebSocket Disconnected, attempting to reconnect...')
       setIsConnected(false)
-      setTimeout(connectWebSocket, 5000) // Reconnect after 5 seconds
+      setTimeout(connectWebSocket, 5000)
     }
 
     ws.onerror = (error) => {
@@ -42,8 +41,6 @@ export default function ChatPage() {
   // Initialize WebSocket on mount
   useEffect(() => {
     connectWebSocket()
-
-    // Cleanup on unmount
     return () => {
       if (wsRef.current) {
         wsRef.current.close()
@@ -55,7 +52,7 @@ export default function ChatPage() {
   const handleSendMessage = () => {
     if (wsRef.current && newMessage.trim() && isConnected) {
       wsRef.current.send(newMessage)
-      setNewMessage('') // Clear input after sending
+      setNewMessage('') // Clear input; server will broadcast the message back
     }
   }
 
@@ -92,14 +89,14 @@ export default function ChatPage() {
           placeholder="Type a message..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()} // Send on Enter
+          onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           className="flex-1 mr-2"
-          disabled={!isConnected} // Disable input when disconnected
+          disabled={!isConnected}
         />
         <Button
           onClick={handleSendMessage}
           className="bg-blue-500 text-white"
-          disabled={!isConnected} // Disable button when disconnected
+          disabled={!isConnected}
         >
           Send
         </Button>
